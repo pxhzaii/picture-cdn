@@ -69,11 +69,18 @@ function json(data: unknown, status = 200): Response {
 
 function arrayBufferToBase64(buffer: ArrayBuffer): string {
   const bytes = new Uint8Array(buffer);
-  let binary = '';
-  for (let i = 0; i < bytes.length; i++) {
-    binary += String.fromCharCode(bytes[i]);
+  // 分块编码避免大文件栈溢出（每块 512KB）
+  const CHUNK = 512 * 1024;
+  let result = '';
+  for (let offset = 0; offset < bytes.length; offset += CHUNK) {
+    const slice = bytes.subarray(offset, Math.min(offset + CHUNK, bytes.length));
+    let binary = '';
+    for (let i = 0; i < slice.length; i++) {
+      binary += String.fromCharCode(slice[i]);
+    }
+    result += btoa(binary);
   }
-  return btoa(binary);
+  return result;
 }
 
 function checkToken(env: Env, token?: string): boolean {
@@ -127,8 +134,11 @@ async function pushToGitHub(env: Env, path: string, base64: string): Promise<str
   });
 
   if (!res.ok) {
-    const err = await res.text();
-    throw new Error(`GitHub 上传失败 (${res.status}): ${err}`);
+    const errText = await res.text();
+    if (res.status === 422) {
+      throw new Error('GitHub 上传失败：文件已存在（同名文件冲突），请重试');
+    }
+    throw new Error(`GitHub 上传失败 (${res.status}): ${errText}`);
   }
   const data = (await res.json()) as { content?: { path?: string } };
   return data.content?.path || path;
