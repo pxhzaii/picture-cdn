@@ -195,7 +195,6 @@ document.addEventListener('paste', function (event) {
                 // });
                 //layer.close(layer.index);
             }
-            }
         } else {
             //for firefox
         }
