@@ -40,7 +40,7 @@
             <div id="main">
                 <div class="alert alert-warning" role="alert">
                     <span class="alert-inner--icon"><i class="layui-icon"></i></span>
-                    <span class="alert-inner--text">仅支持单文件,大小限制2MB,本站图床存储于<a style="color: red;" href="https://github.com/">Github</a>且由<a style="color: red;" href="https://www.jsdelivr.com/">Jsdelivr</a>提供全球CDN加速 &nbsp;&nbsp; 项目地址:<a style="color: red;" href="https://github.com/yumusb/autoPicCdn">https://github.com/yumusb/autoPicCdn</a> &nbsp;&nbsp; <a style="color: red;" href="http://33.al/donate">捐赠</a>
+                    <span class="alert-inner--text">支持 GitHub / Gitee 双平台存储，多条 CDN 线路加速，单文件最大 20MB，支持点击或 Ctrl+V 粘贴上传</span>
 			
 		</span>
                 </div>
@@ -65,7 +65,7 @@
                     <div class="layui-inline">
                         <label class="layui-form-label" style="width:auto;">存储平台</label>
                         <div class="layui-input-inline" style="width: 120px;">
-                            <select id="storage-type">
+                            <select id="storage-type" lay-filter="storage-type">
                                 <option value="github" selected>GitHub</option>
                                 <option value="gitee">Gitee</option>
                             </select>
