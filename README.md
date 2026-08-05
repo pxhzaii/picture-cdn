@@ -3,10 +3,10 @@ AIGC:
   ContentProducer: '001191110102MAD55U9H0F10002'
   ContentPropagator: '001191110102MAD55U9H0F10002'
   Label: '1'
-  ProduceID: '7119df11-e028-4a7a-8c15-f942eaa486ed'
-  PropagateID: '7119df11-e028-4a7a-8c15-f942eaa486ed'
-  ReservedCode1: '3aa3cfcd-b09e-4e10-a885-dfd3fad800c8'
-  ReservedCode2: '3aa3cfcd-b09e-4e10-a885-dfd3fad800c8'
+  ProduceID: '1152692f-ceb2-4c87-a1f1-9d069f16f830'
+  PropagateID: '1152692f-ceb2-4c87-a1f1-9d069f16f830'
+  ReservedCode1: 'f15a535e-6ee5-4ed1-9ac2-5183b5c19db1'
+  ReservedCode2: 'f15a535e-6ee5-4ed1-9ac2-5183b5c19db1'
 ---
 
 # Picture CDN - Cloudflare Pages 图床
@@ -16,7 +16,8 @@ AIGC:
 ## 功能
 
 - 支持 **GitHub** 和 **Gitee** 双平台上传
-- **多 CDN 线路切换**（仅 GitHub）：jsDelivr / Statically / Gcore / GitHub Raw
+- **多 CDN 线路切换**（仅 GitHub）：jsDelivr / Gcore / Statically / GitHub Raw / GHProxy 镜像 / GitHub加速
+- **时间戳自动重命名**：上传文件按 `年月日时分秒毫秒+随机字符` 命名，同名文件不会冲突
 - **可选 R2 双写**：图片同时存到 Cloudflare R2，自带 CDN
 - **访问口令可开关**：`TOKEN_REQUIRED=true` 启用，`false` 关闭
 - 前端支持点击上传 + Ctrl+V 粘贴上传
@@ -145,7 +146,7 @@ AIGC:
 1. 打开部署后的页面
 2. 如果开启了口令（`TOKEN_REQUIRED=true`），在「访问口令」输入框填写正确的口令
 3. 选择存储平台：**GitHub**（默认）或 **Gitee**
-4. 如选 GitHub，可选择 CDN 线路（jsDelivr / Statically / Gcore / GitHub Raw）
+4. 如选 GitHub，可选择 CDN 线路（jsDelivr / Gcore / Statically / GitHub Raw / GHProxy 镜像 / GitHub加速）
 5. 如果需要同时存到 R2，勾选「同时存到 R2」开关
 6. 点击上传区域选择图片，或直接 Ctrl+V 粘贴剪贴板中的图片
 7. 上传成功后会显示：
@@ -156,9 +157,19 @@ AIGC:
 
 ## 七、文件大小限制
 
-- 前端 layui 组件限制：10MB
+- 前端 layui 组件限制：20MB
 - 后端校验限制：20MB
 - GitHub Contents API 限制：约 19MB 原始文件（base64 编码后约 25MB）
+
+## 八、文件命名规则
+
+上传文件自动重命名为时间戳，格式为 `YYYYMMDDHHmmssSSS+4位随机字符.扩展名`，例如：
+```
+2026/08/05/20260805143052783a2f.png
+```
+- 日期目录：`年/月/日/`
+- 文件名：`年月日时分秒毫秒` + `4位随机字符` + `.扩展名`
+- 同名文件不会冲突，无需担心覆盖
 
 ## 八、安全注意事项
 
@@ -193,6 +204,7 @@ AIGC:
 | 上传成功但 jsDelivr 链接 404 | 缓存未刷新或分支名不对 | 等待几分钟；确认 `GH_BRANCH` 与仓库实际默认分支一致 |
 | R2 链接不显示 | 环境变量或绑定缺失 | 确认 `UPLOAD_R2=true`、`MY_BUCKET` 已绑定、`R2_PUBLIC_URL` 已填写 |
 | R2 链接显示但无法访问 | R2 未开启公共访问 | 在 R2 桶设置中启用 R2.dev subdomain 或自定义域名 |
+| 上传返回 422 / 文件已存在 | 同名文件冲突（极少发生） | 自动时间戳重命名，通常不会出现；若出现请重试 |
 | 上传大文件失败（413） | 超过大小限制 | 压缩图片后重试（上限 20MB） |
 
 ## 致谢
