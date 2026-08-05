@@ -54,12 +54,32 @@
                 </div>
                 <!-- 上传区域END -->
                 
-                <!-- 设置项：访问口令 + R2 开关 -->
+                <!-- 设置项：访问口令 + 存储平台 + CDN 线路 + R2 开关 -->
                 <div class="layui-form-item" style="margin-top: 12px;">
                     <div class="layui-inline">
                         <label class="layui-form-label" style="width:auto;">访问口令</label>
-                        <div class="layui-input-inline" style="width: 200px;">
+                        <div class="layui-input-inline" style="width: 160px;">
                             <input type="password" id="access-token" class="layui-input" placeholder="留空则不需要口令">
+                        </div>
+                    </div>
+                    <div class="layui-inline">
+                        <label class="layui-form-label" style="width:auto;">存储平台</label>
+                        <div class="layui-input-inline" style="width: 120px;">
+                            <select id="storage-type">
+                                <option value="github" selected>GitHub</option>
+                                <option value="gitee">Gitee</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="layui-inline" id="cdn-line-wrap">
+                        <label class="layui-form-label" style="width:auto;">CDN 线路</label>
+                        <div class="layui-input-inline" style="width: 140px;">
+                            <select id="cdn-line">
+                                <option value="jsdelivr" selected>jsDelivr</option>
+                                <option value="staticaly">Statically</option>
+                                <option value="gcore">Gcore</option>
+                                <option value="raw">GitHub Raw</option>
+                            </select>
                         </div>
                     </div>
                     <div class="layui-inline">

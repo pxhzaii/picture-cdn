@@ -26,7 +26,9 @@ layui.use(['upload','form','element','layer','flow'], function(){
             ,field: 'file'     // 后端接收的字段名
             ,data: {
                 token: function(){ return $('#access-token').val() || ''; },
-                useR2: function(){ return ($('#use-r2').prop('checked') ? 'true' : 'false'); }
+                useR2: function(){ return ($('#use-r2').prop('checked') ? 'true' : 'false'); },
+                storage: function(){ return $('#storage-type').val() || 'github'; },
+                cdn: function(){ return $('#cdn-line').val() || 'jsdelivr'; }
             }
             ,choose: function(obj){ //obj参数包含的信息，跟 choose回调完全一致，可参见上文。
                 $(".progress").hide();
@@ -50,6 +52,19 @@ layui.use(['upload','form','element','layer','flow'], function(){
 			}
         });
         //单文件上传END
+
+        // 存储平台切换：Gitee 时隐藏 CDN 线路（Gitee 无多线路）
+        form.on('select(storage-type)', function(data){
+            if(data.value === 'gitee'){
+                $('#cdn-line-wrap').hide();
+            } else {
+                $('#cdn-line-wrap').show();
+            }
+        });
+        // 初始化时也触发一次
+        if($('#storage-type').val() === 'gitee'){
+            $('#cdn-line-wrap').hide();
+        }
 
 });
 function handleres(res,index){
@@ -148,6 +163,8 @@ document.addEventListener('paste', function (event) {
                     formData.append('file', images[0]);
                     formData.append('token', $('#access-token').val() || '');
                     formData.append('useR2', ($('#use-r2').prop('checked') ? 'true' : 'false'));
+                    formData.append('storage', $('#storage-type').val() || 'github');
+                    formData.append('cdn', $('#cdn-line').val() || 'jsdelivr');
                     $.ajax({
                         url: '/up',
                         data: formData,

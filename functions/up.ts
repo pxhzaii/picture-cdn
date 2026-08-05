@@ -3,27 +3,38 @@
  * 替代原 PHP 版 up.php，运行于 Cloudflare Pages Functions（无 PHP/MySQL）。
  *
  * 功能：
- *  - 将图片上传到 GitHub 公开仓库（base64 提交），返回 jsDelivr CDN 链接（原方案）
- *  - 可选地同时写入 Cloudflare R2（通过环境变量 UPLOAD_R2=true 开启）
+ *  - 支持上传到 GitHub 或 Gitee 公开仓库（base64 提交）
+ *  - 多 CDN 线路切换：jsDelivr / staticaly / gcore / GitHub Raw（Gitee 用直链）
+ *  - 可选同时写入 Cloudflare R2
  *  - 访问口令可开关（TOKEN_REQUIRED=false 时无需口令）
- *  - 已去掉原 MySQL 去重逻辑（KV 不再需要）
  *
  * 环境变量（在 Cloudflare Pages 项目设置中配置）：
+ *  --- GitHub（必填，STORAGE_TYPE 含 github 时需要） ---
  *  - GH_TOKEN       GitHub Personal Access Token（仅需 repo 权限）
  *  - GH_USER        GitHub 用户名
  *  - GH_REPO        仓库名
  *  - GH_BRANCH      分支名（默认 main）
- *  - GH_EMAIL       提交邮箱（可随便写）
- *  - ACCESS_TOKEN   上传访问口令（依赖 TOKEN_REQUIRED 开关）
+ *  - GH_EMAIL       提交邮箱
+ *
+ *  --- Gitee（STORAGE_TYPE 含 gitee 时需要） ---
+ *  - GITEE_TOKEN    Gitee Personal Access Token
+ *  - GITEE_USER     Gitee 用户名
+ *  - GITEE_REPO     仓库名
+ *  - GITEE_BRANCH   分支名（默认 master）
+ *  - GITEE_EMAIL    提交邮箱
+ *
+ *  --- 通用 ---
+ *  - ACCESS_TOKEN   上传访问口令
  *  - TOKEN_REQUIRED 是否强制校验口令，true/false（默认 true）
  *  - UPLOAD_R2      是否同时写入 R2，true/false（默认 false）
- *  - R2_PUBLIC_URL  R2 公共访问基础 URL（直链），如 https://cdn.example.com
- * 绑定：R2 存储桶，变量名需为 MY_BUCKET（见 wrangler.toml / Pages 绑定）
+ *  - R2_PUBLIC_URL  R2 公共访问基础 URL
  *
  * 前端需 POST multipart/form-data，字段：
  *  - file     图片文件
  *  - token    访问口令（若开启）
- *  - useR2    "true"/"false"，是否同时写入 R2
+ *  - useR2    "true"/"false"
+ *  - storage  "github" / "gitee"（默认 github）
+ *  - cdn      "jsdelivr" / "staticaly" / "gcore" / "raw"（默认 jsdelivr，仅 GitHub 有效）
  */
 
 interface Env {
@@ -32,6 +43,11 @@ interface Env {
   GH_REPO: string;
   GH_BRANCH?: string;
   GH_EMAIL?: string;
+  GITEE_TOKEN?: string;
+  GITEE_USER?: string;
+  GITEE_REPO?: string;
+  GITEE_BRANCH?: string;
+  GITEE_EMAIL?: string;
   ACCESS_TOKEN: string;
   TOKEN_REQUIRED?: string;
   UPLOAD_R2?: string;
@@ -51,7 +67,6 @@ function json(data: unknown, status = 200): Response {
   });
 }
 
-// 分块将 ArrayBuffer 转为 base64，避免大文件展开报栈溢出（与原 PHP base64_encode 一致）
 function arrayBufferToBase64(buffer: ArrayBuffer): string {
   const bytes = new Uint8Array(buffer);
   let binary = '';
@@ -61,14 +76,31 @@ function arrayBufferToBase64(buffer: ArrayBuffer): string {
   return btoa(binary);
 }
 
-// 校验口令（可开关）
 function checkToken(env: Env, token?: string): boolean {
   const required = (env.TOKEN_REQUIRED ?? 'true').toLowerCase() !== 'false';
   if (!required) return true;
   return !!token && token === env.ACCESS_TOKEN;
 }
 
-// 上传到 GitHub（base64，与原 PHP 一致），返回 jsDelivr 链接
+// GitHub CDN 线路
+function githubCdnUrl(env: Env, filePath: string, cdn: string): string {
+  const branch = env.GH_BRANCH || 'main';
+  const user = env.GH_USER;
+  const repo = env.GH_REPO;
+  switch (cdn) {
+    case 'staticaly':
+      return `https://cdn.staticaly.com/gh/${user}/${repo}@${branch}/${filePath}`;
+    case 'gcore':
+      return `https://gcore.jsdelivr.net/gh/${user}/${repo}@${branch}/${filePath}`;
+    case 'raw':
+      return `https://raw.githubusercontent.com/${user}/${repo}/${branch}/${filePath}`;
+    case 'jsdelivr':
+    default:
+      return `https://cdn.jsdelivr.net/gh/${user}/${repo}@${branch}/${filePath}`;
+  }
+}
+
+// 上传到 GitHub
 async function pushToGitHub(env: Env, path: string, base64: string): Promise<string> {
   const branch = env.GH_BRANCH || 'main';
   const email = env.GH_EMAIL || 'picbed@example.com';
@@ -95,11 +127,42 @@ async function pushToGitHub(env: Env, path: string, base64: string): Promise<str
     throw new Error(`GitHub 上传失败 (${res.status}): ${err}`);
   }
   const data = (await res.json()) as { content?: { path?: string } };
-  const p = data.content?.path || path;
-  return `https://cdn.jsdelivr.net/gh/${env.GH_USER}/${env.GH_REPO}@${branch}/${p}`;
+  return data.content?.path || path;
 }
 
-// 可选：写入 R2（需同时满足环境变量总开关 + 前端用户选择）
+// 上传到 Gitee
+async function pushToGitee(env: Env, path: string, base64: string): Promise<string> {
+  const user = env.GITEE_USER || '';
+  const repo = env.GITEE_REPO || '';
+  const branch = env.GITEE_BRANCH || 'master';
+  const url = `https://gitee.com/api/v5/repos/${user}/${repo}/contents/${path}`;
+
+  const res = await fetch(url, {
+    method: 'POST',
+    headers: {
+      'User-Agent': 'Cloudflare-Pages-Picbed',
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      access_token: env.GITEE_TOKEN,
+      message: 'upload picture',
+      content: base64,
+      owner: user,
+      repo,
+      path,
+      branch,
+    }),
+  });
+
+  if (!res.ok) {
+    const err = await res.text();
+    throw new Error(`Gitee 上传失败 (${res.status}): ${err}`);
+  }
+  const data = (await res.json()) as { content?: { path?: string; download_url?: string } };
+  return data.content?.download_url || data.content?.path || path;
+}
+
+// 写入 R2
 async function pushToR2(env: Env, key: string, body: ArrayBuffer, userRequested: boolean): Promise<string | null> {
   const globalEnabled = (env.UPLOAD_R2 ?? 'false').toLowerCase() === 'true';
   if (!globalEnabled || !userRequested || !env.MY_BUCKET) return null;
@@ -119,6 +182,8 @@ export const onRequestPost: PagesFunction<Env> = async (context) => {
     const file = form.get('file');
     const token = (form.get('token') as string) || undefined;
     const useR2 = (form.get('useR2') as string) || 'false';
+    const storage = (form.get('storage') as string) || 'github';
+    const cdn = (form.get('cdn') as string) || 'jsdelivr';
 
     // 口令校验
     if (!checkToken(env, token)) {
@@ -129,8 +194,7 @@ export const onRequestPost: PagesFunction<Env> = async (context) => {
       return json({ code: 404, msg: '无法识别你的文件', url: null }, 404);
     }
 
-    // 后端文件大小校验（GitHub Contents API 上限约 19MB 原始文件）
-    const MAX_SIZE = 20 * 1024 * 1024; // 20MB
+    const MAX_SIZE = 20 * 1024 * 1024;
     if (file.size > MAX_SIZE) {
       return json({ code: 413, msg: '文件过大，上限 20MB', url: null }, 413);
     }
@@ -145,13 +209,26 @@ export const onRequestPost: PagesFunction<Env> = async (context) => {
     const rand = crypto.randomUUID().replace(/-/g, '').slice(0, 12);
     const path = `${y}/${m}/${d}/${rand}.${ext}`;
 
-    let ghUrl = '';
-    try {
-      ghUrl = await pushToGitHub(env, path, base64);
-    } catch (e) {
-      return json({ code: 500, msg: (e as Error).message, url: null }, 500);
+    // 上传到对应平台并生成链接
+    let url = '';
+    if (storage === 'gitee') {
+      try {
+        url = await pushToGitee(env, path, base64);
+      } catch (e) {
+        return json({ code: 500, msg: (e as Error).message, url: null }, 500);
+      }
+    } else {
+      // GitHub
+      let filePath = '';
+      try {
+        filePath = await pushToGitHub(env, path, base64);
+      } catch (e) {
+        return json({ code: 500, msg: (e as Error).message, url: null }, 500);
+      }
+      url = githubCdnUrl(env, filePath, cdn);
     }
 
+    // R2 双写
     let r2Url: string | null = null;
     if (useR2 === 'true') {
       try {
@@ -164,7 +241,7 @@ export const onRequestPost: PagesFunction<Env> = async (context) => {
     return json({
       code: 'success',
       data: {
-        url: ghUrl,
+        url,
         r2url: r2Url || '',
         filemd5: '',
       },
