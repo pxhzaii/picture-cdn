@@ -71,7 +71,7 @@ AIGC:
 | `GH_USER` | GitHub 用户名 | `pxhzaii` |
 | `GH_REPO` | 图片存储仓库名 | `tc` |
 | `ACCESS_TOKEN` | 上传口令（用户上传时需填写） | `your-secret-password` |
-| `TOKEN_REQUIRED` | 是否强制校验上传口令 | `true` `true` / `false` |
+| `TOKEN_REQUIRED` | 是否强制校验上传口令 | `true`  |
 
 
 **口令开关说明**：
