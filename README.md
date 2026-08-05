@@ -3,10 +3,10 @@ AIGC:
   ContentProducer: '001191110102MAD55U9H0F10002'
   ContentPropagator: '001191110102MAD55U9H0F10002'
   Label: '1'
-  ProduceID: 'cf2fa388-0ad8-4823-b327-4409279e6eab'
-  PropagateID: 'cf2fa388-0ad8-4823-b327-4409279e6eab'
-  ReservedCode1: '67e352ea-6e53-40a2-a3dc-8f10d4bad09a'
-  ReservedCode2: '67e352ea-6e53-40a2-a3dc-8f10d4bad09a'
+  ProduceID: '3d07fdfc-c81c-46d6-8109-4351a84be6ad'
+  PropagateID: '3d07fdfc-c81c-46d6-8109-4351a84be6ad'
+  ReservedCode1: '427c1516-c3aa-4cf5-8ef9-9c4c87d637b5'
+  ReservedCode2: '427c1516-c3aa-4cf5-8ef9-9c4c87d637b5'
 ---
 
 # Picture CDN - Cloudflare Pages 图床
