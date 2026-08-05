@@ -4,7 +4,7 @@
  *
  * 功能：
  *  - 支持上传到 GitHub 或 Gitee 公开仓库（base64 提交）
- *  - 多 CDN 线路切换：jsDelivr / staticaly / gcore / GitHub Raw（Gitee 用直链）
+ *  - 多 CDN 线路切换：jsDelivr / gcore / staticaly / GitHub Raw / GHProxy / GitHub加速（Gitee 用直链）
  *  - 可选同时写入 Cloudflare R2
  *  - 访问口令可开关（TOKEN_REQUIRED=false 时无需口令）
  *
@@ -69,16 +69,23 @@ function json(data: unknown, status = 200): Response {
 
 function arrayBufferToBase64(buffer: ArrayBuffer): string {
   const bytes = new Uint8Array(buffer);
-  // 分块编码避免大文件栈溢出（每块 512KB）
+  // 分块编码避免大文件栈溢出（每块 512KB，对齐 3 字节边界保证 base64 正确拼接）
   const CHUNK = 512 * 1024;
   let result = '';
-  for (let offset = 0; offset < bytes.length; offset += CHUNK) {
-    const slice = bytes.subarray(offset, Math.min(offset + CHUNK, bytes.length));
+  for (let offset = 0; offset < bytes.length; ) {
+    // 确保每块长度是 3 的倍数（base64 编码单元）
+    let end = Math.min(offset + CHUNK, bytes.length);
+    const remainder = (end - offset) % 3;
+    if (remainder !== 0 && end < bytes.length) {
+      end -= remainder;
+    }
+    const slice = bytes.subarray(offset, end);
     let binary = '';
     for (let i = 0; i < slice.length; i++) {
       binary += String.fromCharCode(slice[i]);
     }
     result += btoa(binary);
+    offset = end;
   }
   return result;
 }
