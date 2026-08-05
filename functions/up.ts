@@ -34,7 +34,7 @@
  *  - token    访问口令（若开启）
  *  - useR2    "true"/"false"
  *  - storage  "github" / "gitee"（默认 github）
- *  - cdn      "jsdelivr" / "staticaly" / "gcore" / "raw"（默认 jsdelivr，仅 GitHub 有效）
+ *  - cdn      "jsdelivr" / "gcore" / "staticaly" / "raw" / "ghproxy" / "gh加速"（默认 jsdelivr，仅 GitHub 有效）
  */
 
 interface Env {
@@ -88,12 +88,16 @@ function githubCdnUrl(env: Env, filePath: string, cdn: string): string {
   const user = env.GH_USER;
   const repo = env.GH_REPO;
   switch (cdn) {
-    case 'staticaly':
-      return `https://cdn.staticaly.com/gh/${user}/${repo}@${branch}/${filePath}`;
     case 'gcore':
       return `https://gcore.jsdelivr.net/gh/${user}/${repo}@${branch}/${filePath}`;
+    case 'staticaly':
+      return `https://cdn.staticaly.com/gh/${user}/${repo}@${branch}/${filePath}`;
     case 'raw':
       return `https://raw.githubusercontent.com/${user}/${repo}/${branch}/${filePath}`;
+    case 'ghproxy':
+      return `https://mirror.ghproxy.com/https://raw.githubusercontent.com/${user}/${repo}/${branch}/${filePath}`;
+    case 'gh加速':
+      return `https://gh.api.99988866.xyz/https://raw.githubusercontent.com/${user}/${repo}/${branch}/${filePath}`;
     case 'jsdelivr':
     default:
       return `https://cdn.jsdelivr.net/gh/${user}/${repo}@${branch}/${filePath}`;
