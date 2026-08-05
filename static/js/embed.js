@@ -36,7 +36,7 @@ layui.use(['upload','form','element','layer','flow'], function(){
             ,accept:'file'
             ,acceptMime:'image/jpeg,image/pjpeg,image/png,image/x-png,image/gif'
             ,exts: 'jpg|jpeg|png|gif'
-            ,size:10240
+            ,size:20480
             ,before: function(obj){ //obj参数包含的信息，跟 choose回调完全一致，可参见上文。
                 layer.load(); //上传loading
             }
@@ -67,7 +67,7 @@ layui.use(['upload','form','element','layer','flow'], function(){
         }
 
 });
-function handleres(res,index){
+function handleres(res){
     layui.use('layer', function(){
         var layer = layui.layer;
         if(res.code != 'success'){
@@ -177,7 +177,8 @@ document.addEventListener('paste', function (event) {
                             handleres(data);
                         },
                         error: function (xOptions, textStatus) {
-                            return;
+                            layer.closeAll('loading');
+                            layer.msg('上传失败，请重试', {time: 2000, icon:2});
                         }
                         
                     });
@@ -194,12 +195,6 @@ document.addEventListener('paste', function (event) {
                 // });
                 //layer.close(layer.index);
             }
-            if ( blob !== null ) {
-                let reader = new FileReader();
-                reader.onload = function (event) {
-                    let base64_str = event.target.result;
-                }
-
             }
         } else {
             //for firefox
