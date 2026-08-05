@@ -1,0 +1,24 @@
+# Cloudflare Pages 项目配置（本地预览用 `wrangler pages dev`）
+# 部署到 Cloudflare Pages 时，环境变量与 R2 绑定请在 Dashboard「设置 → 环境变量 / R2 绑定」中配置，无需提交真实密钥。
+
+name = "picture-cdn"
+compatibility_date = "2024-09-23"
+pages_build_output_dir = "."
+
+# R2 存储桶绑定（可选，仅在上传时勾选「同时存到 R2」且 UPLOAD_R2=true 时启用）
+[[r2_buckets]]
+binding = "MY_BUCKET"
+bucket_name = "picture-cdn"   # 改为你的 R2 桶名
+
+# 本地预览时的环境变量（生产环境请在 Pages Dashboard 配置，不要硬编码真实 Token）
+[env.vars]
+GH_USER = "pxhzai"
+GH_REPO = "tc"
+GH_BRANCH = "main"
+GH_EMAIL = "a353000446@163.com"
+TOKEN_REQUIRED = "true"
+UPLOAD_R2 = "true"
+R2_PUBLIC_URL = "https://your-r2-domain.example.com"
+# 以下敏感变量请改为通过 `wrangler pages dev --binding` 或 Dashboard 注入：
+# GH_TOKEN = "ghp_xxx"        # 生产请放 Pages 环境变量
+# ACCESS_TOKEN = "你的口令"     # 生产请放 Pages 环境变量
