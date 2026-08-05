@@ -2,14 +2,15 @@ body{
     background-image:url('https://ae01.alicdn.com/kf/Uffa9481892cd4dcebe5e2ada452c1e6bI.jpg');
     background-size: cover;
     background-color: #202020;
+    color: #e0e0e0;
 }
 @media screen and (max-width:640px) {
 	body{
     background-color: #202020;
     background-size: cover;
     width: 100%;
-    color:#232323;
- }
+    color: #e0e0e0;
+  }
 }
 .header{
     background-color:rgba(0,0,0,0.4);
@@ -156,7 +157,7 @@ body{
     margin-top:-1em;
 }
 p{
-    color:#393D49;
+    color:#e0e0e0;
 }
 #left-gg{
     position:fixed;
@@ -180,4 +181,38 @@ p{
 }
 .progress{
     display: none;
+}
+
+/* === 深色主题覆盖 === */
+.layui-form-label{
+    color: #e0e0e0;
+}
+.layui-input,
+.layui-select{
+    background-color: rgba(255,255,255,0.9);
+    color: #333;
+}
+.layui-form-select dl{
+    background-color: #fff;
+}
+.layui-form-select dd{
+    color: #333;
+}
+.layui-form-select dd:hover{
+    background-color: #f2f2f2;
+}
+.layui-form-select dd.layui-this{
+    background-color: #5FB878;
+    color: #fff;
+}
+#cdn-line-wrap .layui-form-select dl,
+.layui-inline .layui-form-select dl{
+    background-color: #fff;
+    max-height: 300px;
+}
+.alert-inner--text{
+    color: #fff !important;
+}
+.layui-form-item .layui-inline{
+    margin-right: 10px;
 }
