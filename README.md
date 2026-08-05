@@ -3,10 +3,10 @@ AIGC:
   ContentProducer: '001191110102MAD55U9H0F10002'
   ContentPropagator: '001191110102MAD55U9H0F10002'
   Label: '1'
-  ProduceID: '3d07fdfc-c81c-46d6-8109-4351a84be6ad'
-  PropagateID: '3d07fdfc-c81c-46d6-8109-4351a84be6ad'
-  ReservedCode1: '427c1516-c3aa-4cf5-8ef9-9c4c87d637b5'
-  ReservedCode2: '427c1516-c3aa-4cf5-8ef9-9c4c87d637b5'
+  ProduceID: '7119df11-e028-4a7a-8c15-f942eaa486ed'
+  PropagateID: '7119df11-e028-4a7a-8c15-f942eaa486ed'
+  ReservedCode1: '3aa3cfcd-b09e-4e10-a885-dfd3fad800c8'
+  ReservedCode2: '3aa3cfcd-b09e-4e10-a885-dfd3fad800c8'
 ---
 
 # Picture CDN - Cloudflare Pages 图床
@@ -94,10 +94,12 @@ AIGC:
 
 | 线路 | 地址格式 | 特点 |
 |------|----------|------|
-| jsDelivr | `cdn.jsdelivr.net/gh/...` | 全球 CDN，默认推荐 |
-| Statically | `cdn.staticaly.com/gh/...` | 备用线路 |
+| jsDelivr | `cdn.jsdelivr.net/gh/...` | 全球 CDN，国内网宿加速，默认推荐 |
 | Gcore | `gcore.jsdelivr.net/gh/...` | Gcore 节点加速 |
+| Statically | `cdn.staticaly.com/gh/...` | 备用线路 |
 | GitHub Raw | `raw.githubusercontent.com/...` | 原始链接，无 CDN |
+| GHProxy 镜像 | `mirror.ghproxy.com/...` | GitHub 反代加速，国内友好 |
+| GitHub 加速 | `gh.api.99988866.xyz/...` | Cloudflare Workers 反代 |
 
 **口令开关说明**：
 - `TOKEN_REQUIRED=true`（默认）：用户必须填写正确的口令才能上传
