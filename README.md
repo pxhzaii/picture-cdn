@@ -72,13 +72,20 @@ AIGC:
 | `GH_REPO` | 图片存储仓库名 | `tc` |
 | `ACCESS_TOKEN` | 上传口令（用户上传时需填写） | `your-secret-password` |
 
+#### 建议配置（GitHub）
+|--------|------|--------|--------|
+| `TOKEN_REQUIRED` | 是否强制校验上传口令 | `true` | `true` / `false` |
+
+**口令开关说明**：
+- `TOKEN_REQUIRED=true`（默认）：用户必须填写正确的口令才能上传
+- `TOKEN_REQUIRED=false`：任何人无需口令即可上传（公开图床模式）
+
 #### 可选配置（GitHub）
 
 | 变量名 | 说明 | 默认值 | 示例值 |
 |--------|------|--------|--------|
 | `GH_BRANCH` | 仓库分支 | `main` | `main` |
 | `GH_EMAIL` | 提交邮箱 | `picbed@example.com` | `you@example.com` |
-| `TOKEN_REQUIRED` | 是否强制校验上传口令 | `true` | `true` / `false` |
 | `UPLOAD_R2` | R2 全局总开关 | `false` | `true` / `false` |
 | `R2_PUBLIC_URL` | R2 公共访问基础 URL | 空 | `https://cdn.yourdomain.com` |
 
@@ -103,9 +110,6 @@ AIGC:
 | GHProxy 镜像 | `mirror.ghproxy.com/...` | GitHub 反代加速，国内友好 |
 | GitHub 加速 | `gh.api.99988866.xyz/...` | Cloudflare Workers 反代 |
 
-**口令开关说明**：
-- `TOKEN_REQUIRED=true`（默认）：用户必须填写正确的口令才能上传
-- `TOKEN_REQUIRED=false`：任何人无需口令即可上传（公开图床模式）
 
 ## 四、R2 存储配置（可选）
 
