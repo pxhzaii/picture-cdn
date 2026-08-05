@@ -168,9 +168,6 @@ async function pushToGitee(env: Env, path: string, base64: string): Promise<stri
       access_token: env.GITEE_TOKEN,
       message: 'upload picture',
       content: base64,
-      owner: user,
-      repo,
-      path,
       branch,
     }),
   });
