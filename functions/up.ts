@@ -224,8 +224,15 @@ export const onRequestPost: PagesFunction<Env> = async (context) => {
     const y = date.getFullYear();
     const m = String(date.getMonth() + 1).padStart(2, '0');
     const d = String(date.getDate()).padStart(2, '0');
-    const rand = crypto.randomUUID().replace(/-/g, '').slice(0, 12);
-    const path = `${y}/${m}/${d}/${rand}.${ext}`;
+    const ts = date.getFullYear().toString()
+      + String(date.getMonth() + 1).padStart(2, '0')
+      + String(date.getDate()).padStart(2, '0')
+      + String(date.getHours()).padStart(2, '0')
+      + String(date.getMinutes()).padStart(2, '0')
+      + String(date.getSeconds()).padStart(2, '0')
+      + String(date.getMilliseconds()).padStart(3, '0');
+    const rand = crypto.randomUUID().replace(/-/g, '').slice(0, 4);
+    const path = `${y}/${m}/${d}/${ts}${rand}.${ext}`;
 
     // 上传到对应平台并生成链接
     let url = '';
