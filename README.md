@@ -11,7 +11,7 @@ AIGC:
 
 # Picture CDN - Cloudflare Pages 图床
 
-基于 [autoPicCdn](https://github.com/yumusb/autoPicCdn) 改造，将原 PHP 后端替换为 Cloudflare Pages Functions，无需 PHP / MySQL 即可运行。
+由 AI 基于 [autoPicCdn](https://github.com/yumusb/autoPicCdn) 改造，将原 PHP 后端替换为 Cloudflare Pages Functions，无需 PHP / MySQL 即可运行。
 
 ## 功能
 
@@ -56,6 +56,7 @@ AIGC:
    - **Framework preset**: None
    - **Build command**: 留空
    - **Build output directory**: `.`（点号，表示根目录）
+   - 可以在环境变量（高级）添加环境变量，也可以去**3.2**配置
 4. 点击 Save and Deploy
 
 ### 3.2 配置环境变量
