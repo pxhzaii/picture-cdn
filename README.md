@@ -13,6 +13,11 @@ AIGC:
 
 由 AI 基于 [autoPicCdn](https://github.com/yumusb/autoPicCdn) 改造，将原 PHP 后端替换为 Cloudflare Pages Functions，无需 PHP / MySQL 即可运行。
 
+测试网址 https://totp-auth-1d9.pages.dev/
+密码11
+同步密码22
+因为可能会有其他人测试，所以可能会有同步/恢复丢失的情况
+
 ## 功能
 
 - 支持 **GitHub** 和 **Gitee** 双平台上传
