@@ -54,13 +54,18 @@ AIGC:
 ### 3.1 创建 Pages 项目
 
 1. 登录 Cloudflare Dashboard → Workers & Pages → Create application → Pages → Connect to Git
-2. 选择图床代码所在的 GitHub 仓库
-3. 构建设置：
+- **注意**是最下方的小字 `想要部署 Pages？开始使用`
+- **注意**是最下方的小字 `想要部署 Pages？开始使用`
+- **注意**是最下方的小字 `想要部署 Pages？开始使用`
+- **注意**是最下方的小字 `想要部署 Pages？开始使用`
+- **注意**是最下方的小字 `想要部署 Pages？开始使用`
+3. 选择图床代码所在的 GitHub 仓库
+4. 构建设置：
    - **Framework preset**: None
    - **Build command**: 留空
    - **Build output directory**: `.`（点号，表示根目录）
    - 可以在环境变量（高级）添加环境变量，也可以去**3.2**配置
-4. 点击 Save and Deploy
+5. 点击 Save and Deploy
 
 ### 3.2 配置环境变量
 
