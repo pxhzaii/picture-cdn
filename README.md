@@ -1,13 +1,3 @@
----
-AIGC:
-  ContentProducer: '001191110102MAD55U9H0F10002'
-  ContentPropagator: '001191110102MAD55U9H0F10002'
-  Label: '1'
-  ProduceID: '1152692f-ceb2-4c87-a1f1-9d069f16f830'
-  PropagateID: '1152692f-ceb2-4c87-a1f1-9d069f16f830'
-  ReservedCode1: 'f15a535e-6ee5-4ed1-9ac2-5183b5c19db1'
-  ReservedCode2: 'f15a535e-6ee5-4ed1-9ac2-5183b5c19db1'
----
 
 # Picture CDN - Cloudflare Pages 图床
 
