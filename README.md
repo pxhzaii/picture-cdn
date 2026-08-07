@@ -14,6 +14,8 @@ AIGC:
 由 AI 基于 [autoPicCdn](https://github.com/yumusb/autoPicCdn) 改造，将原 PHP 后端替换为 Cloudflare Pages Functions，无需 PHP / MySQL 即可运行。
 
 
+**演示站点**https://picture-cdn-c3k.pages.dev/  口令就不给了 看看样子就行了
+
 ## 功能
 
 - 支持 **GitHub** 和 **Gitee** 双平台上传
